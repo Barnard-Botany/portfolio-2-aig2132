@@ -1,4 +1,5 @@
 ---
+author: Abigail I. Gutierrez
 title: "Species lists with abundance data and biodiversity metrics"
 output: html_notebook
 ---
@@ -393,6 +394,7 @@ dim(threecounty.ab)
 urban.ab<-matrify(threecounty.ab)
 urban.ab
 #If we look at the dimensions of this matrix, what does it mean? What is 2? What is 9?
+
 dim(urban.ab)
 simpson<-diversity(urban.ab, index = "simpson")
 shannon<-diversity(urban.ab, index = "shannon")
@@ -425,6 +427,9 @@ Now that we know how to write a file in CSV format, how would we read it?
 MH=read.csv("WelikiaMH.csv")
 head(MH)
 tail(MH)
+
+
+
 ```
 
 ```{r}
@@ -499,3 +504,148 @@ How do you interpret the indices computed for the County data?
 Now process the other three lists in the same fashion.
 
 How do you interpret indices computed from your second type of data? 
+
+
+#Part A: List three countries & Prodice a Matrix  
+How do you interpret the indices computed for the County data? 
+The simpson data gives us a measure of diversity that takes into account the number of species present as well as the abundance of that specific species. A high simpson index would mean that both the species richness and evenness increases. This diversity indez quantifies the diversity in a given location/ region. In this case, I was able to observe the species diversity of Miami, Houston and LA, all regions where predominanlty Latinx people reside. We also calculated the bray-curtis index of dissimilarity, which quantifies the compositional dissimilarity between two different sites based on the counts of species in the different sites. Based on the data received by BIEN and by R analysis I can see that I got an index of 1 for all three locations. 
+
+
+```{r}
+### Miami, Florida 
+miami <- BIEN_occurrence_county(country="United States", state="Florida", county = "Miami-Dade")
+head(miami)
+tail(miami)
+attributes(miami) 
+### Los Angeles, California 
+LA <- BIEN_occurrence_county(country="United States", state="California", county = "Los Angeles")
+head(LA)
+tail(LA)
+attributes(LA) 
+### Houston, Texas 
+Houston <- BIEN_occurrence_county(country="United States", state="Texas", county = "Harris")
+head(Houston)
+tail(Houston)
+attributes(Houston) 
+
+###Now I'm going to work with county data 
+
+miami.occ=miami[c(1)]
+head(miami.occ)
+LA.occ=LA[c(1)]
+head(LA.occ)
+Houston.occ=Houston[c(1)]
+head(Houston.occ) 
+
+#To turn them into species lists with abundance data 
+miami.ab=count(miami.occ)
+head(miami.ab)
+LA.ab=count(LA.occ)
+head(LA.ab)
+Houston.ab=count(Houston.occ)
+head(Houston.ab) 
+
+# Renaming the columns 
+miami.ab=data.frame("miami", miami.ab)
+head(miami.ab)
+names(miami.ab)<-c("ListID", "SpeciesID", "Freq")
+head(miami.ab)
+
+#i get an erron on line 546 but I do not see where I went wrong. 
+
+LA.ab=data.frame("LA", LA.ab)
+head(LA.ab)
+names(LA.ab)<-c("ListID", "SpeciesID", "Freq")
+head(LA.ab)
+
+Houston.ab=data.frame("Houston", Houston.ab)
+head(Houston.ab)
+names(Houston.ab)<-c("ListID", "SpeciesID", "Freq")
+head(Houston.ab)
+
+threecounty.ab=rbind(miami.ab, LA.ab, Houston.ab)
+head(threecounty.ab)
+tail(threecounty.ab)
+dim(threecounty.ab) 
+
+#function matrify is going to convert this list of species with their site-specific abundances into a matrix 
+urban.ab<-matrify(threecounty.ab)
+urban.ab 
+
+#Next we can analize what the data means 
+dim(urban.ab)
+simpson<-diversity(urban.ab, index = "simpson")
+shannon<-diversity(urban.ab, index = "shannon")
+simpson
+shannon
+bray = vegdist(urban.ab, "bray")
+bray
+jaccard = vegdist(urban.ab, "jaccard", binary=T)
+jaccard 
+
+#write.csv(threecounty.ab, file = "threecounty.csv") this is if I want to download the data frame I made. 
+
+```
+
+#Part B: Other type of lists 
+How do you interpret indices computed from your second type of data?  
+
+On the second set of data I decided to go for the Welikia data that showed the species that lived in my home area in 1609. I thought that it was really cool to know what lived exaclty where I lived about 300+ years ago. I also used the data set form Plant O Matic that gave me a list of species that live in my area based on my locations and records that have been cited to be collected there. I did not realize that since I used the first 50 species then I only selected the species in alphabetical order. 
+
+
+I was unable to finish this part of the portfolio given that the code marked an error on line 
+
+```{r}
+
+MH=read.csv("Wlikia3.csv")
+MH
+head(MH)
+tail(MH) 
+speciesID1=paste(MH$Scientific, MH$Name, sep=" ")
+speciesID1
+MH_list=count(MH)
+
+head(MH_list)
+MH_list=data.frame(MH_list)
+MH_list=data.frame("MH", MH_list)
+head(MH_list) 
+names(MH_list)<-c("ListID", "SpeciesID1", "Freq") 
+
+
+#second sample Plant O Matic 
+POM=read.csv("Plant-O-Matic2.csv")
+View(POM)
+head(POM)
+tail(POM)
+speciesID2=paste(POM$Scientific, POM$Name, sep=" ")
+speciesID2
+POM_list=count(POM)
+head(POM_list)
+POM_list=data.frame("POM", POM_list)
+names(POM_list)<-c("ListID", "SpeciesID2", "Freq") 
+
+
+#ALL ABOVE is working however the rbind is not working and so I cannot find a way to compute the simpson 
+
+#combining both datas into one 
+Welikia3=rbind(POM_list, MH_list)
+dim(Welikia3)
+
+#And run the matrify function
+wab1=matrify(Welikia3)
+wab1
+#SO then none of this code works because upper code does not work. 
+
+#then we can compute 
+simpson2<-diversity(wab1, index = "simpson")
+shannon2<-diversity(wab1, index = "shannon")
+simpson2
+shannon2
+jaccard2 = vegdist(wab1, "jaccard")
+jaccard2
+bray2 = vegdist(wab1, "bray")
+bray2 
+
+```
+
+
