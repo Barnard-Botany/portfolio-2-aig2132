@@ -599,7 +599,7 @@ MH=read.csv("Wlikia2.csv")
 MH
 head(MH)
 tail(MH)
-MH_list <- MH_list[7]
+MH_list <- MH[6]
 MH_list <- count(MH_list)
 
 head(MH_list)
@@ -610,7 +610,6 @@ names(MH_list)<-c("ListID", "SpeciesID", "Freq")
 
 #second sample Plant O Matic 
 POM=read.csv("Plant-O-Matic2.csv")
-View(POM)
 head(POM)
 tail(POM)
 speciesID=paste(POM$Scientific, POM$Name, sep=" ")
